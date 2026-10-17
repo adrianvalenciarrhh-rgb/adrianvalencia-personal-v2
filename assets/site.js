@@ -5,9 +5,16 @@ const $$=(s,c=d)=>[...c.querySelectorAll(s)];
 
 /* Ajuste de titulares a ancho (wordmark, 404, contacto) */
 const fits=$$('.fit');
+/* Portada: encuadre de la mirada. Pelo bajo la barra y orificios nasales a la altura del borde superior de las letras.
+   Referencias medidas en portada-bn-2 (1024 px): pelo y=100, nariz (orificios) y=565, eje de la cara x=497. */
+function aim(){const im=d.querySelector('.hp-k img'),hn=d.querySelector('.h-name'),bl=hn&&hn.querySelector('.bl'),he=d.querySelector('.hero');if(!im||!bl||!he)return;
+ const fs=parseFloat(getComputedStyle(hn).fontSize),cx=(aim.c||(aim.c=d.createElement('canvas').getContext('2d')));cx.font=fs+'px Anton';const cap=cx.measureText('N').actualBoundingBoxAscent||fs*.735;
+ const hb=he.getBoundingClientRect(),W=hb.width,capTop=bl.getBoundingClientRect().bottom-hb.top-cap,hd=d.querySelector('.hd-in'),Ht=(hd?hd.offsetHeight:72)+4,mob=W<=600;
+ const N=540,s=mob?Math.max(W/994,Math.min(capTop/N,(W-20)/355)):Math.max(W/994,capTop/N,(capTop-Ht)/(N-100)),z=1024*s;
+ im.style.cssText='width:'+z.toFixed(1)+'px;height:'+z.toFixed(1)+'px;left:'+(W/2-497*s).toFixed(1)+'px;top:'+(capTop-N*s).toFixed(1)+'px';im.parentNode.style.transformOrigin='50% '+(capTop-(N-435)*s).toFixed(1)+'px';}
 function fit(){fits.forEach(el=>{const wm=el.querySelector('.wm');if(!wm)return;
  if(el.dataset.lines){const ls=el.querySelectorAll('.nl');if(innerWidth<=+el.dataset.lines){el.style.fontSize='';const box=el.parentNode,cs=getComputedStyle(box),cw=box.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);ls.forEach(l=>{l.style.fontSize='100px';const w=l.firstChild.getBoundingClientRect().width;l.style.fontSize=(100*cw/w*.995).toFixed(2)+'px'});return}ls.forEach(l=>l.style.fontSize='')}el.style.fontSize='100px';const w=wm.getBoundingClientRect().width,cw=el.clientWidth||el.parentNode.clientWidth;if(!w)return;let fs=Math.min(100*cw/w*.995,+el.dataset.max||1000);if(el.dataset.maxh){const h=wm.getBoundingClientRect().height*fs/100,mh=innerHeight*el.dataset.maxh;if(h>mh)fs*=mh/h}el.style.fontSize=fs.toFixed(2)+'px';});}
-fit();d.fonts&&d.fonts.ready.then(fit);let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(fit,80)});
+fit();aim();d.fonts&&d.fonts.ready.then(()=>{fit();aim()});let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{fit();aim()},80)});
 
 /* Aparición al entrar en viewport */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{rootMargin:'0px 0px -10% 0px'});
